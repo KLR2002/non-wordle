@@ -6,9 +6,9 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const fetchAndModifyWord = async () => {
   const { data } = await axios.get('https://random-word-api.herokuapp.com/word?length=5');
-  console.log(`random word: ${data}`)
-  const randomEntry = data[Math.floor(Math.random() * data.length)];
-  const originalWord = randomEntry.word.toUpperCase();
+  const word = data.toString();
+
+  const originalWord = word.toUpperCase();
 
   const modifyIndex = Math.floor(Math.random() * 5);
   let newChar = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
@@ -29,7 +29,7 @@ export const useGame = () => {
   const [currentGuess, setCurrentGuess] = useState('');
   const [gameStatus, setGameStatus] = useState('playing');
 
-  const { data, refetch, isLoading } = useQuery({
+  const { data, refetch, isLoading, isError, error } = useQuery({
     queryKey: ['wordOfTheGame'],
     queryFn: fetchAndModifyWord,
     refetchOnWindowFocus: false,
@@ -80,6 +80,8 @@ export const useGame = () => {
     gameStatus,
     targetData: data,
     isLoading,
+    isError,
+    error,
     handleKeyup,
     handleRestart,
   };
