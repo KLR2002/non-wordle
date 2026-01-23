@@ -16,9 +16,9 @@ const Tile = ({ letter, color, delay = 0, isCompleted }) => {
     <Flex
       justify="center"
       align="center"
-      w="60px"
-      h="60px"
-      fontSize="2xl"
+      w={['50px', '60px']} 
+      h={['50px', '60px']}
+      fontSize={['xl', '2xl']}
       fontWeight="bold"
       border="2px solid"
       borderColor={color === 'transparent' ? 'gray.600' : 'transparent'}
@@ -44,24 +44,25 @@ const KEYS = [
 
 
 const Keyboard = ({ onKey, keyColors }) => (
-  <VStack spacing={2} mt={8}>
+  <VStack spacing={2} mt={8} w="100%" px={2}> 
     {KEYS.map((row, i) => (
-      <Flex key={i} gap={1}>
+      <Flex key={i} gap={1} w="100%" justify="center">
         {row.map((key) => {
-          const bg = keyColors[key] || 'gray.600'; 
+          const bg = keyColors[key] ?? 'gray.600';
+          const isSpecialKey = key.length > 1;
+
           return (
             <Button
               key={key}
               onClick={() => onKey(key)}
-              h="50px"
-              minW={key.length > 1 ? '60px' : '40px'}
+              h={['45px', '55px']} 
+              flex={isSpecialKey ? 1.5 : 1} 
+              px={1} 
               bg={bg}
               color="white"
-              _hover={{ 
-                filter: 'brightness(1.2)'
-              }}
+              _hover={{ filter: 'brightness(1.2)' }}
               transition="background-color 0.3s ease"
-              fontSize={key.length > 1 ? 'xs' : 'md'}
+              fontSize={isSpecialKey ? 'xs' : ['sm', 'md']} 
             >
               {key === 'BACKSPACE' ? '⌫' : key}
             </Button>
@@ -113,11 +114,9 @@ export default function NonWordle() {
 
   const empties = Array(6 - guesses.length).fill('');
 
-  
-
   return (
       <Box minH="100vh" bg="gray.900" color="white" py={10}>
-        <VStack spacing={6}>
+        <VStack spacing={6} w="100%" maxW="500px" mx="auto">
           <Heading color="purple.300">Non-Wordle</Heading>
           
           <Text fontSize="sm" color="gray.400" textAlign='center'>
@@ -158,7 +157,7 @@ export default function NonWordle() {
             {gameStatus === 'playing' && empties.map((_, i) => (
               <SimpleGrid key={i} columns={5} spacing={2}>
                 {[...Array(5)].map((_, idx) => (
-                  <Box key={idx} w="60px" h="60px" border="2px solid" borderColor="gray.800" />
+                  <Box key={idx} w={['50px', '60px']} h={['50px', '60px']} border="2px solid" borderColor="gray.800" />
                 ))}
               </SimpleGrid>
             ))}
