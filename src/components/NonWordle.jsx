@@ -112,7 +112,7 @@ export default function NonWordle() {
     );
   }
 
-  const empties = Array(6 - guesses.length).fill('');
+  const empties = Array(6 - Math.min(guesses.length, 6)).fill('');
 
   return (
       <Box minH="100vh" bg="gray.900" color="white" py={10}>
