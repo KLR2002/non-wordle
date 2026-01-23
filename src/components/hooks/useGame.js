@@ -20,8 +20,8 @@ const fetchAndModifyWord = async () => {
   const splitWord = originalWord.split('');
   splitWord[modifyIndex] = newChar;
   const targetWord = splitWord.join('');
-
-  return { targetWord, modifyIndex, imposterChar: newChar };
+  console.log(`Word to guess: ${targetWord}`)
+  return { targetWord, modifyIndex, originalWord, imposterChar: newChar };
 };
 
 export const useGame = () => {

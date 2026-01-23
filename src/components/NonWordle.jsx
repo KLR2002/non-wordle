@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Box, VStack, Heading, Button, Text, SimpleGrid, Flex, Spinner } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
-import { getTileColor } from './utils/TileColor';
+import { getTileColor, getKeyboardColors } from './utils/TileColor';
 import { useGame } from './hooks/useGame';
+
 
 const flip = keyframes`
   0% { transform: rotateX(0); }
@@ -40,27 +42,37 @@ const KEYS = [
   ['ENTER', ...'ZXCVBNM'.split(''), 'BACKSPACE'],
 ];
 
-const Keyboard = ({ onKey }) => (
+
+const Keyboard = ({ onKey, keyColors }) => (
   <VStack spacing={2} mt={8}>
     {KEYS.map((row, i) => (
       <Flex key={i} gap={1}>
-        {row.map((key) => (
-          <Button
-            key={key}
-            onClick={() => onKey(key)}
-            h="50px"
-            minW={key.length > 1 ? '60px' : '40px'}
-            bg="gray.600"
-            _hover={{ bg: 'gray.500' }}
-            fontSize={key.length > 1 ? 'xs' : 'md'}
-          >
-            {key === 'BACKSPACE' ? '⌫' : key}
-          </Button>
-        ))}
+        {row.map((key) => {
+          const bg = keyColors[key] || 'gray.600'; 
+          return (
+            <Button
+              key={key}
+              onClick={() => onKey(key)}
+              h="50px"
+              minW={key.length > 1 ? '60px' : '40px'}
+              bg={bg}
+              color="white"
+              _hover={{ 
+                filter: 'brightness(1.2)'
+              }}
+              transition="background-color 0.3s ease"
+              fontSize={key.length > 1 ? 'xs' : 'md'}
+            >
+              {key === 'BACKSPACE' ? '⌫' : key}
+            </Button>
+          );
+        })}
       </Flex>
     ))}
   </VStack>
 );
+
+
 
 
 export default function NonWordle() {
@@ -75,6 +87,11 @@ export default function NonWordle() {
     handleKeyup, 
     handleRestart 
   } = useGame();
+
+  const keyboardColors = useMemo(() => {
+    if (!targetData) return {};
+    return getKeyboardColors(guesses, targetData);
+  }, [guesses, targetData]);
 
     if (isError) {
     return (
@@ -96,12 +113,14 @@ export default function NonWordle() {
 
   const empties = Array(6 - guesses.length).fill('');
 
+  
+
   return (
       <Box minH="100vh" bg="gray.900" color="white" py={10}>
         <VStack spacing={6}>
           <Heading color="purple.300">Non-Wordle</Heading>
           
-          <Text fontSize="sm" color="gray.400">
+          <Text fontSize="sm" color="gray.400" textAlign='center'>
             One letter is fake! <br />
             <Text as="span" color="purple.400" fontWeight="bold">Purple</Text> = Found fake letter at fake spot<br />
             <Text as="span" color="pink.400" fontWeight="bold">Pink</Text> = Found fake letter, wrong spot
@@ -156,13 +175,14 @@ export default function NonWordle() {
                 {gameStatus === 'won' ? 'You Win!' : 'Game Over'}
               </Heading>
               <Text>The word was: {targetData.targetWord}</Text>
+              <Text>The original word was: {targetData.originalWord}</Text>
               <Button colorScheme="purple" onClick={handleRestart}>
                 Play Again
               </Button>
             </VStack>
           )}
 
-          <Keyboard onKey={handleKeyup} />
+          <Keyboard onKey={handleKeyup} keyColors={keyboardColors}/>
           
         </VStack>
       </Box>
