@@ -8,44 +8,66 @@ const COLOR_PRIORITY = {
   'undefined' : 0 
 };
 
-export const getTileColor = (letter, index, targetWord, modifyIndex, imposterChar) => {
-  if (!letter) return 'transparent';
+export const getTileColor = (guess, targetData) => {
+  const { targetWord, modifyIndex } = targetData;
+  const guessArr = guess.split('');
+  const colors = Array(5).fill('gray.600');
 
-  const isImposterChar = letter === imposterChar;
-  const isCorrectPosition = letter === targetWord[index];
+  const targetLetters = targetWord.split('').map((char, index) => ({
+    char,
+    isImposter: index === modifyIndex,
+    used: false,
+  }));
 
-  if (isImposterChar && index === modifyIndex) return 'purple.400'; 
-  if (isImposterChar && isCorrectPosition) return 'green.400'; 
-  if (isImposterChar && targetWord.includes(letter)) return 'pink.400';
+  guessArr.forEach((letter, i) => {
+    if (letter === targetLetters[i].char) {
+      colors[i] = targetLetters[i].isImposter ? 'purple.400' : 'green.400';
+      targetLetters[i].used = true; 
+      guessArr[i] = null;
+    }
+  });
 
-  if (isCorrectPosition) return 'green.400';
-  if (targetWord.includes(letter)) return 'yellow.400';
+  guessArr.forEach((letter, i) => {
+    if (!letter) return; 
 
-  return 'gray.600';
+    const imposterMatchIndex = targetLetters.findIndex(
+      (t) => t.char === letter && !t.used && t.isImposter
+    );
+
+    if (imposterMatchIndex !== -1) {
+      colors[i] = 'pink.400';
+      targetLetters[imposterMatchIndex].used = true;
+      return;
+    }
+
+    const normalMatchIndex = targetLetters.findIndex(
+      (t) => t.char === letter && !t.used && !t.isImposter
+    );
+
+    if (normalMatchIndex !== -1) {
+      colors[i] = 'yellow.400';
+      targetLetters[normalMatchIndex].used = true;
+    }
+  });
+
+  return colors;
 };
 
 export const getKeyboardColors = (guesses, targetData) => {
   const keyColors = {};
 
   guesses.forEach((word) => {
+    const rowColors = getTileColor(word, targetData);
+
     word.split('').forEach((letter, index) => {
-      const color = getTileColor(
-        letter, 
-        index, 
-        targetData.targetWord, 
-        targetData.modifyIndex, 
-        targetData.imposterChar
-      );
+      const color = rowColors[index];
       const currentScore = COLOR_PRIORITY[keyColors[letter] ?? 'undefined'];
       const newScore = COLOR_PRIORITY[color];
-      console.log("New score: ", newScore)
-      console.log("Current score: ", currentScore)
-      console.log("color: ", color)
 
       if (newScore > currentScore) {
-        if (color === 'gray.600')
+        if(color === 'gray.600')
           keyColors[letter] = 'transparent';
-        else
+        else 
           keyColors[letter] = color;
       }
     });

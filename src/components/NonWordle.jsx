@@ -127,25 +127,20 @@ export default function NonWordle() {
           </Text>
 
           <VStack spacing={2}>
-            {guesses.map((word, i) => (
-              <SimpleGrid key={i} columns={5} spacing={2}>
+            {guesses.map((word, i) => {
+              const rowColors = getTileColor(word, targetData);
+              return (<SimpleGrid key={i} columns={5} spacing={2}>
                 {word.split('').map((letter, idx) => (
                   <Tile
                     key={idx}
                     letter={letter}
                     isCompleted={true}
                     delay={idx * 0.1} 
-                    color={getTileColor(
-                      letter, 
-                      idx, 
-                      targetData.targetWord, 
-                      targetData.modifyIndex, 
-                      targetData.imposterChar
-                    )}
+                    color={rowColors[idx]}
                   />
                 ))}
-              </SimpleGrid>
-            ))}
+              </SimpleGrid>)
+              })}
 
             {gameStatus === 'playing' && (
                <SimpleGrid columns={5} spacing={2}>
