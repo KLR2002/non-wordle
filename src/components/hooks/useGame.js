@@ -5,8 +5,8 @@ import axios from 'axios';
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const fetchAndModifyWord = async () => {
-  const { data } = await axios.get('https://random-word-api.herokuapp.com/word?length=5');
-  const word = data.toString();
+  const { data } = await axios.get('https://random-words-api.kushcreates.com/api?language=en&category=wordle&words=1');
+  const word = data["word"];
 
   const originalWord = word.toUpperCase();
 
