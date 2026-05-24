@@ -6,7 +6,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const fetchAndModifyWord = async () => {
   const { data } = await axios.get('https://random-words-api.kushcreates.com/api?language=en&category=wordle&words=1');
-  const word = data["word"];
+  const word = data[0]["word"];
 
   const originalWord = word.toUpperCase();
 
